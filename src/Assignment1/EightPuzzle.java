@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class EightPuzzle {
     public static void main(String[] args) {
         ArrayList<ArrayList<Integer>> potentialBoard = Board.askForThreeByThreeInput();
+        Board board = new Board(potentialBoard);
 
     }
 }

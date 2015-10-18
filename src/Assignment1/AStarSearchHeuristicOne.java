@@ -13,7 +13,7 @@ public class AStarSearchHeuristicOne {
     private PriorityQueue<Board> frontierList;
     private HashSet<String> frontierSet;
     //this actually gives us the tree of everything
-    private HashSet<BoardNode> exploredSet;
+    private HashSet<Board> exploredSet;
 
     //put initial state in frontier
     //generate children of top of priority queue,

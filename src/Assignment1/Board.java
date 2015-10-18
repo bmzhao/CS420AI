@@ -1,32 +1,46 @@
 package Assignment1;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 /**
  * Created by brianzhao on 10/17/15.
  */
-public class Board {
-    private int dimension;
+public class Board implements Comparable<Board> {
+    private final int dimension;
     private ArrayList<ArrayList<Integer>> underlying;
+    private Board parentBoard;
+    private int cost;
+    private int heuristicCost;
+    private final String boardState;
 
+    //still need to set heuristiccost
     public Board(int dimension) {
         this.dimension = dimension;
         generateBoard();
+        boardState = this.toString();
+        parentBoard = null;
+        cost = 0;
     }
 
+    //still need to set heuristiccost
     public Board(ArrayList<ArrayList<Integer>> input) {
         dimension = input.size();
-        ArrayList<Integer> oneDimension =convertToSingleDimension(input);
+        ArrayList<Integer> oneDimension = convertToSingleDimension(input);
         if (!isSolvable(oneDimension)) {
             throw new RuntimeException();
         }
-        underlying = (ArrayList<ArrayList<Integer>>)input.clone();
+        parentBoard = null;
+        underlying = (ArrayList<ArrayList<Integer>>) input.clone();
+        boardState = this.toString();
+        cost = 0;
     }
 
     private void generateBoard() {
-        int size = dimension* dimension;
+        int size = dimension * dimension;
         ArrayList<Integer> nums = new ArrayList<>();
-        for (int i = 0; i <size; i++) {
+        for (int i = 0; i < size; i++) {
             nums.add(i);
         }
         Collections.shuffle(nums);
@@ -71,13 +85,16 @@ public class Board {
 
     public static boolean isSolvable(ArrayList<Integer> input) {
         int numInversions = 0;
-        for (int i = 0; i < input.size()-1; i++) {
-            for (int j = i+1; j < input.size(); j++) {
-                if (input.get(i) > input.get(j)) {
+        for (int i = 0; i < input.size() - 1; i++) {
+            for (int j = i + 1; j < input.size(); j++) {
+                if ((input.get(i) > input.get(j)) && (input.get(i) != 0 && input.get(j) != 0)) {
                     numInversions++;
                 }
             }
         }
+        System.out.println(numInversions%2 == 0);
+        System.out.println(numInversions);
+
         return numInversions % 2 == 0;
     }
 
@@ -99,6 +116,99 @@ public class Board {
         return toReturn;
     }
 
+    public String getBoardState() {
+        return boardState;
+    }
+
+    public Board getParentNode() {
+        return parentBoard;
+    }
+
+    public void setParentNode(Board parentBoard) {
+        this.parentBoard = parentBoard;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public int getHeuristicCost() {
+        return heuristicCost;
+    }
+
+    public void setHeuristicCost(int heuristicCost) {
+        this.heuristicCost = heuristicCost;
+    }
+
+    @Override
+    public int compareTo(Board o) {
+        return (this.cost + this.heuristicCost) - (o.cost + o.heuristicCost);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Board board = (Board) o;
+        if (boardState == null || board.boardState == null) {
+            return false;
+        } else {
+            return boardState.equals(board.boardState);
+        }
+
+    }
+
+    @Override
+    public int hashCode() {
+        return boardState.hashCode();
+    }
+
+//    public ArrayList<Board> generateChildren() {
+//        Tuple zeroPosition = getZeroPosition();
+//        ArrayList<Board> children = new ArrayList<>();
+//
+//        Tuple leftSwap = zeroPosition.subtract(new Tuple(0, -1));
+//
+//        //left swap
+//
+//
+//        Tuple rightSwap = zeroPosition.subtract(new Tuple(0, -1));
+//        //right swap
+//
+//
+//        //down swap
+//
+//
+//
+//        //top swap
+//    }
+
+
+    public Tuple getZeroPosition() {
+        boolean done = false;
+        Tuple toReturn = null;
+        for (int i = 0; i < underlying.size(); i++) {
+            for (int j = 0; j < underlying.get(i).size(); j++) {
+                if (underlying.get(i).get(j) == 0) {
+                    toReturn =new Tuple(i, j);
+                    done = true;
+                    break;
+                }
+            }
+            if (done) {
+                break;
+            }
+        }
+        if (toReturn == null) {
+            throw new RuntimeException();
+        }
+        return toReturn;
+    }
 
 
 }
