@@ -4,7 +4,6 @@ package Assignment1;
  * Created by brianzhao on 10/17/15.
  */
 
-
 public class Tuple {
     int rowNumber;
     int columnNumber;

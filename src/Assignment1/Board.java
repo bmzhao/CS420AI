@@ -50,7 +50,7 @@ public class Board implements Comparable<Board> {
             }
             toReturn.add(toAdd);
         }
-        return new Board(toReturn,heuristicDelegate);
+        return new Board(toReturn, heuristicDelegate);
     }
 
     public static Board askForTwoByTwoInput(PuzzleHeuristicFunction heuristicDelegate) {
@@ -68,7 +68,7 @@ public class Board implements Comparable<Board> {
             }
             toReturn.add(toAdd);
         }
-        return new Board(toReturn,heuristicDelegate);
+        return new Board(toReturn, heuristicDelegate);
     }
 
     //should have no parentaction
@@ -124,7 +124,6 @@ public class Board implements Comparable<Board> {
     }
 
 
-
     @Override
     public String toString() {
         StringBuilder toReturn = new StringBuilder();
@@ -171,7 +170,6 @@ public class Board implements Comparable<Board> {
         }
         return numInversions % 2 == 0;
     }
-
 
 
     public String getBoardState() {
@@ -230,29 +228,29 @@ public class Board implements Comparable<Board> {
         Tuple zeroPosition = getZeroPosition();
         ArrayList<Board> children = new ArrayList<>();
 
-        Tuple leftSwap = zeroPosition.add(new Tuple(0, -1,dimension));
+        Tuple leftSwap = zeroPosition.add(new Tuple(0, -1, dimension));
         if (leftSwap.isValid()) {
             children.add(generateChildBoard(performSwap(zeroPosition, leftSwap), BoardAction.LeftSwap));
         }
 
-        Tuple rightSwap = zeroPosition.add(new Tuple(0, 1,dimension));
+        Tuple rightSwap = zeroPosition.add(new Tuple(0, 1, dimension));
         if (rightSwap.isValid()) {
             children.add(generateChildBoard(performSwap(zeroPosition, rightSwap), BoardAction.RightSwap));
         }
 
-        Tuple downSwap = zeroPosition.add(new Tuple(1, 0,dimension));
+        Tuple downSwap = zeroPosition.add(new Tuple(1, 0, dimension));
         if (downSwap.isValid()) {
             children.add(generateChildBoard(performSwap(zeroPosition, downSwap), BoardAction.DownSwap));
         }
 
-        Tuple topSwap = zeroPosition.add(new Tuple(-1,0,dimension));
+        Tuple topSwap = zeroPosition.add(new Tuple(-1, 0, dimension));
         if (topSwap.isValid()) {
             children.add(generateChildBoard(performSwap(zeroPosition, topSwap), BoardAction.TopSwap));
         }
         return children;
     }
-    
-    
+
+
     //deep copies underyling, performs the enumerated action on the copy and returns it
     private ArrayList<ArrayList<Integer>> performSwap(Tuple startCoord, Tuple endCoord) {
         ArrayList<ArrayList<Integer>> toReturn = gridCloner(underlying);
@@ -293,5 +291,4 @@ public class Board implements Comparable<Board> {
         }
         return toReturn;
     }
-
 }

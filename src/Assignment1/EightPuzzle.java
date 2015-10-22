@@ -77,13 +77,16 @@ public class EightPuzzle {
 //        ArrayList<ArrayList<Integer>> potentialBoard = Board.askForThreeByThreeInput();
 
         long totalTime = 0;
-        long start = System.currentTimeMillis();
-//        outputPath(runAStar(3,manhattanDistanceHeuristic));
-        outputPath(runAStar(5, manhattanDistanceHeuristic));
-        long finish = System.currentTimeMillis();
-        totalTime += finish - start;
+        for (int i = 0; i < 1000; i++) {
+            long start = System.currentTimeMillis();
+            runAStar(3, manhattanDistanceHeuristic);
+            long finish = System.currentTimeMillis();
+            totalTime += finish - start;
+            System.out.println(finish-start);
+        }
 
-        System.out.println(totalTime / 1000.0);
+
+        System.out.println("Average time: " + (totalTime / 1000.0 / 1000.0));
     }
 
 
@@ -93,28 +96,30 @@ public class EightPuzzle {
         resetState();
         initialState = new Board(dimension, heuristicFunction);
 //        initialState = Board.askForTwoByTwoInput(manhattanDistanceHeuristic);
-        System.out.println(initialState);
+//        System.out.println(initialState);
         frontierList.add(initialState);
         frontierSet.put(initialState, initialState.getCost());
         while (!frontierList.isEmpty()) {
             Board toExpand = frontierList.poll();
             frontierSet.remove(toExpand);
+            exploredSet.add(toExpand);
             if (goalTest(toExpand)) {
                 return toExpand;
             }
             ArrayList<Board> children = toExpand.generateChildren();
             for (Board child : children) {
-                if (frontierSet.containsKey(child)) {
-                    if (child.getCost() < frontierSet.get(child)) {
+                if (!exploredSet.contains(child)) { //if the explored set doesn't already have this
+                    if (frontierSet.containsKey(child)) {
+                        if (child.getCost() < frontierSet.get(child)) {
+                            frontierSet.put(child, child.getCost());
+                            frontierList.remove(child); //this will remove the node already in frontierlist
+                            frontierList.add(child); //this will add the new child to frontierlist
+                        } //else don't consider this node or any of its children
+                    } else {
                         frontierSet.put(child, child.getCost());
-                        frontierList.remove(child); //this will remove the node already in frontierlist
-                        frontierList.add(child); //this will add the new child to frontierlist
-                    } //else don't consider this node or any of its children
-                } else {
-                    frontierSet.put(child, child.getCost());
-                    frontierList.add(child);
-//                    System.out.println(child);
-                }
+                        frontierList.add(child);
+                    }
+                }//otherwise don't do anything
             }
 
         }
