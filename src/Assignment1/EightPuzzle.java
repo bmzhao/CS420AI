@@ -40,8 +40,8 @@ public class EightPuzzle {
                 for (int j = 0; j < dimension; j++) {
                     int currentValue = grid.get(i).get(j);
                     if (currentValue != 0) {
-                        int expectedRow = currentValue / 3;
-                        int expectedColumn = currentValue % 3;
+                        int expectedRow = currentValue / dimension;
+                        int expectedColumn = currentValue % dimension;
                         result += Math.abs(i - expectedRow) + Math.abs(j - expectedColumn);
                     }
                 }
@@ -75,36 +75,24 @@ public class EightPuzzle {
 
     public static void main(String[] args) {
 //        ArrayList<ArrayList<Integer>> potentialBoard = Board.askForThreeByThreeInput();
-//        outputPath(runAStar());
-
-//        ArrayList<ArrayList<Integer>> test = new ArrayList<>();
-//        ArrayList<Integer> testAdd = new ArrayList<>();
-//        testAdd.add(0);
-//        testAdd.add(2);
-//        test.add(testAdd);
-//        ArrayList<Integer> testAdd1 = new ArrayList<>();
-//        testAdd1.add(1);
-//        testAdd1.add(3);
-//        test.add(testAdd1);
-//        System.out.println(misplacedTilesHeuristic.calculateHeuristic(test));
 
         long totalTime = 0;
-//        for (int i = 0; i < 100; i++) {
         long start = System.currentTimeMillis();
-        outputPath(runAStar());
+//        outputPath(runAStar(3,manhattanDistanceHeuristic));
+        outputPath(runAStar(5, manhattanDistanceHeuristic));
         long finish = System.currentTimeMillis();
         totalTime += finish - start;
-//        }
 
         System.out.println(totalTime / 1000.0);
     }
 
 
     //returns the goal node after it has been polled from top of priority queue
-    private static Board runAStar() {
-        initializeGoal();
+    private static Board runAStar(int dimension,PuzzleHeuristicFunction heuristicFunction) {
+        initializeGoal(dimension,heuristicFunction);
         resetState();
-        initialState = new Board(3, manhattanDistanceHeuristic);
+        initialState = new Board(dimension, heuristicFunction);
+//        initialState = Board.askForTwoByTwoInput(manhattanDistanceHeuristic);
         System.out.println(initialState);
         frontierList.add(initialState);
         frontierSet.put(initialState, initialState.getCost());
@@ -115,7 +103,7 @@ public class EightPuzzle {
                 return toExpand;
             }
             ArrayList<Board> children = toExpand.generateChildren();
-            for (Board child : children)
+            for (Board child : children) {
                 if (frontierSet.containsKey(child)) {
                     if (child.getCost() < frontierSet.get(child)) {
                         frontierSet.put(child, child.getCost());
@@ -125,7 +113,10 @@ public class EightPuzzle {
                 } else {
                     frontierSet.put(child, child.getCost());
                     frontierList.add(child);
+//                    System.out.println(child);
                 }
+            }
+
         }
         return null;
     }
@@ -150,17 +141,17 @@ public class EightPuzzle {
         }
     }
 
-    private static void initializeGoal() {
+    private static void initializeGoal(int dimension, PuzzleHeuristicFunction heuristicFunction) {
         ArrayList<ArrayList<Integer>> goalUnderlying = new ArrayList<>();
         int count = 0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < dimension; i++) {
             ArrayList<Integer> toAdd = new ArrayList<>();
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < dimension; j++) {
                 toAdd.add(count++);
             }
             goalUnderlying.add(toAdd);
         }
-        goal = new Board(goalUnderlying, zeroHeuristic);
+        goal = new Board(goalUnderlying, heuristicFunction);
 
     }
 

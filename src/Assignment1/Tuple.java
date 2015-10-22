@@ -8,23 +8,20 @@ package Assignment1;
 public class Tuple {
     int rowNumber;
     int columnNumber;
+    int dimension;
 
-    public Tuple(int rowNumber, int columnNumber) {
+    public Tuple(int rowNumber, int columnNumber,int dimension) {
         this.rowNumber = rowNumber;
         this.columnNumber = columnNumber;
+        this.dimension = dimension;
     }
 
-    //works with dimension 3
     public boolean isValid() {
-        return rowNumber >= 0 && rowNumber <= 2 && columnNumber >= 0 && columnNumber <= 2;
+        return rowNumber >= 0 && rowNumber <= dimension-1 && columnNumber >= 0 && columnNumber <= dimension-1;
     }
 
     public Tuple add(Tuple tuple) {
-        return new Tuple(tuple.rowNumber + rowNumber, tuple.columnNumber + columnNumber);
-    }
-
-    public Tuple subtract(Tuple tuple) {
-        return new Tuple(rowNumber - tuple.rowNumber, columnNumber - tuple.columnNumber);
+        return new Tuple(tuple.rowNumber + rowNumber, tuple.columnNumber + columnNumber, dimension);
     }
 
 }
