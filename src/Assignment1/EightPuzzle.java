@@ -51,6 +51,7 @@ public class EightPuzzle {
     };
 
 
+    private static final int DIMENSION = 3;
     private static Board goal;
 
     private static Board initialState;
@@ -74,29 +75,116 @@ public class EightPuzzle {
 
 
     public static void main(String[] args) {
-//        ArrayList<ArrayList<Integer>> potentialBoard = Board.askForThreeByThreeInput();
+        displayMenu();
 
-        long totalTime = 0;
-        for (int i = 0; i < 1000; i++) {
-            long start = System.currentTimeMillis();
-            runAStar(3, manhattanDistanceHeuristic);
-            long finish = System.currentTimeMillis();
-            totalTime += finish - start;
-            System.out.println(finish-start);
+    }
+
+
+    private static void displayMenu() {
+        String input = "";
+        while (true) {
+            System.out.println("Select an option to perform:");
+            System.out.println("1. Enter your own puzzle");
+            System.out.println("2. See the solution to a randomly generated puzzle");
+            System.out.println("3. Do 1000 random puzzles, and see data ");
+            System.out.println("4. Exit");
+            System.out.print("Enter your option: ");
+            Scanner scanner = new Scanner(System.in);
+            //read this in as a string to be more robust
+            input = scanner.nextLine();
+            if (!input.matches("[1234]")) {
+                System.out.println("You entered a bad input...retrying");
+                input = "";
+                continue;
+            }
+            int value = Integer.parseInt(input);
+            if (value == 4) {
+                return;
+            }
+            System.out.println();
+            PuzzleHeuristicFunction puzzleHeuristicFunction = chooseHeuristic();
+            if (puzzleHeuristicFunction == null) {
+                continue;
+            }
+
+            Board board = null;
+            switch (value) {
+                case 1:
+                    board = Board.askForThreeByThreeInput(puzzleHeuristicFunction);
+                    break;
+                case 2:
+                    board = new Board(DIMENSION, puzzleHeuristicFunction);
+                    break;
+                case 3: {
+                    InfoRecorder info = new InfoRecorder();
+                    for (int i = 0; i < 1000; i++) {
+                        Board currentBoard = new Board(DIMENSION, puzzleHeuristicFunction);
+                        long startTime = System.currentTimeMillis();
+                        Board resultBoard =runAStar(currentBoard, DIMENSION, puzzleHeuristicFunction);
+                        long endTime = System.currentTimeMillis();
+                        info.addRecord(new Record(resultBoard, exploredSet.size(), endTime - startTime));
+                        System.out.println("Finished puzzle " + i + "...");
+                    }
+                    info.displayTable();
+                    continue;
+                }
+                case 4:
+                    return;
+                default:
+                    break;
+            }
+            InfoRecorder info = new InfoRecorder();
+            long startTime = System.currentTimeMillis();
+            Board result = runAStar(board, DIMENSION, puzzleHeuristicFunction);
+            long endTime = System.currentTimeMillis();
+            info.addRecord(new Record(result, exploredSet.size(), endTime - startTime));
+            System.out.println("Here is the output path: ");
+            outputPath(result);
+            System.out.println("\nHere is the data obtained from this solution: ");
+            info.displayTable();
         }
+    }
 
+    private static PuzzleHeuristicFunction chooseHeuristic() {
+        String input = "";
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Average time: " + (totalTime / 1000.0 / 1000.0));
+        while (!input.equalsIgnoreCase("n")) {
+            System.out.println("Which heuristic would you like to choose?");
+            System.out.println("1. h(n) = 0");
+            System.out.println("2. h(n) = number of misplaced tiles");
+            System.out.println("3. h(n) = manhattan distance");
+            System.out.println("4. To return back to another choice");
+
+            input = scanner.nextLine();
+            if (!input.matches("[1234]")) {
+                System.out.println("You entered a bad input...retrying");
+                input = "";
+                continue;
+            }
+            int value = Integer.parseInt(input);
+            switch (value) {
+                case 1:
+                    return zeroHeuristic;
+                case 2:
+                    return misplacedTilesHeuristic;
+                case 3:
+                    return manhattanDistanceHeuristic;
+                case 4:
+                    return null;
+                default:
+                    throw new RuntimeException("error in input to chosen heuristic");
+            }
+        }
+        return null;
     }
 
 
     //returns the goal node after it has been polled from top of priority queue
-    private static Board runAStar(int dimension,PuzzleHeuristicFunction heuristicFunction) {
-        initializeGoal(dimension,heuristicFunction);
+    private static Board runAStar(Board board, int dimension, PuzzleHeuristicFunction heuristicFunction) {
+        initializeGoal(dimension, heuristicFunction);
         resetState();
-        initialState = new Board(dimension, heuristicFunction);
-//        initialState = Board.askForTwoByTwoInput(manhattanDistanceHeuristic);
-//        System.out.println(initialState);
+        initialState = board;
         frontierList.add(initialState);
         frontierSet.put(initialState, initialState.getCost());
         while (!frontierList.isEmpty()) {
@@ -141,7 +229,7 @@ public class EightPuzzle {
         path.push(currentBoard);
         while (!path.empty()) {
             Board finalPathCurrent = path.pop();
-            System.out.println(finalPathCurrent.getParentAction());
+            System.out.println(finalPathCurrent.getParentAction() == null? "initial state": finalPathCurrent.getParentAction());
             System.out.println(finalPathCurrent);
         }
     }

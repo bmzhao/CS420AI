@@ -36,40 +36,36 @@ public class Board implements Comparable<Board> {
 
     //entry point for asking user for a puzzle
     public static Board askForThreeByThreeInput(PuzzleHeuristicFunction heuristicDelegate) {
-        System.out.println("Please input a 3 x 3 board");
-        Scanner scanner = new Scanner(System.in);
-        ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            String[] integers = scanner.nextLine().split("\\s+");
-            ArrayList<Integer> toAdd = new ArrayList<>();
-            if (integers.length != 3) {
-                throw new RuntimeException();
+        while (true) {
+            System.out.println("Please input a 3 x 3 board");
+            Scanner scanner = new Scanner(System.in);
+            ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
+            boolean nextIteration = false;
+            for (int i = 0; i < 3; i++) {
+                String[] integers = scanner.nextLine().split("\\s+");
+                ArrayList<Integer> toAdd = new ArrayList<>();
+                if (integers.length != 3) {
+                    System.out.println("You had an unsolvable board...retrying");
+                    nextIteration = true;
+                    break;
+                }
+                for (String x : integers) {
+                    toAdd.add(Integer.parseInt(x));
+                }
+                toReturn.add(toAdd);
             }
-            for (String x : integers) {
-                toAdd.add(Integer.parseInt(x));
+            if (nextIteration) {
+                continue;
             }
-            toReturn.add(toAdd);
+            ArrayList<Integer> oneDimension = convertToSingleDimension(toReturn);
+            if (!isSolvable(oneDimension)) {
+                System.out.println("You had an unsolvable board...retrying");
+                continue;
+            }
+            return new Board(toReturn, heuristicDelegate);
         }
-        return new Board(toReturn, heuristicDelegate);
     }
 
-    public static Board askForTwoByTwoInput(PuzzleHeuristicFunction heuristicDelegate) {
-        System.out.println("Please input a 2 x 2 board");
-        Scanner scanner = new Scanner(System.in);
-        ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            String[] integers = scanner.nextLine().split("\\s+");
-            ArrayList<Integer> toAdd = new ArrayList<>();
-            if (integers.length != 2) {
-                throw new RuntimeException();
-            }
-            for (String x : integers) {
-                toAdd.add(Integer.parseInt(x));
-            }
-            toReturn.add(toAdd);
-        }
-        return new Board(toReturn, heuristicDelegate);
-    }
 
     //should have no parentaction
     public Board(ArrayList<ArrayList<Integer>> input, PuzzleHeuristicFunction heuristicDelegate) {
