@@ -78,24 +78,24 @@ public class EightPuzzle {
 
 
     public static void main(String[] args) throws Exception {
-//        displayMenu();
+        displayMenu();
 
-        Scanner scanner = new Scanner(new File("Allboards.txt"));
-        InfoRecorder info = new InfoRecorder();
-        PuzzleHeuristicFunction puzzleHeuristicFunction = misplacedTilesHeuristic;
-        int puzzleNumber = 0;
-        while (scanner.hasNextLine()) {
-            Board currentBoard = Board.askForThreeByThreeInput(puzzleHeuristicFunction, scanner);
-            long startTime = System.currentTimeMillis();
-            Board resultBoard = runAStar(currentBoard, DIMENSION, puzzleHeuristicFunction);
-            long endTime = System.currentTimeMillis();
-            info.addRecord(new Record(resultBoard, exploredSet.size() + frontierSet.size(), endTime - startTime));
-            System.out.println("Finished puzzle " + (++puzzleNumber) + "...");
-            scanner.nextLine();
-            if (puzzleNumber == 181439)
-                break;
-        }
-        info.displayTable();
+//        Scanner scanner = new Scanner(new File("Allboards.txt"));
+//        InfoRecorder info = new InfoRecorder();
+//        PuzzleHeuristicFunction puzzleHeuristicFunction = misplacedTilesHeuristic;
+//        int puzzleNumber = 0;
+//        while (scanner.hasNextLine()) {
+//            Board currentBoard = Board.askForThreeByThreeInput(puzzleHeuristicFunction, scanner);
+//            long startTime = System.currentTimeMillis();
+//            Board resultBoard = runAStar(currentBoard, DIMENSION, puzzleHeuristicFunction);
+//            long endTime = System.currentTimeMillis();
+//            info.addRecord(new Record(resultBoard, exploredSet.size() + frontierSet.size(), endTime - startTime));
+//            System.out.println("Finished puzzle " + (++puzzleNumber) + "...");
+//            scanner.nextLine();
+//            if (puzzleNumber == 181439)
+//                break;
+//        }
+//        info.displayTable();
     }
 
 
@@ -139,7 +139,7 @@ public class EightPuzzle {
                     break;
                 case 3: {
                     InfoRecorder info = new InfoRecorder();
-                    for (int i = 0; i < 1000000; i++) {
+                    for (int i = 0; i < 1000; i++) {
                         Board currentBoard = new Board(DIMENSION, puzzleHeuristicFunction);
                         long startTime = System.currentTimeMillis();
                         Board resultBoard =runAStar(currentBoard, DIMENSION, puzzleHeuristicFunction);
