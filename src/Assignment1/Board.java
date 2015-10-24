@@ -61,6 +61,16 @@ public class Board implements Comparable<Board> {
                 System.out.println("You had an unsolvable board...retrying");
                 continue;
             }
+            for (int i = 0; i < 9; i++) {
+                if (!oneDimension.contains(i)) {
+                    System.out.println("Your board does not have the right values...retrying");
+                    nextIteration = true;
+                    break;
+                }
+            }
+            if (nextIteration) {
+                continue;
+            }
             return new Board(toReturn, heuristicDelegate);
         }
     }
@@ -111,7 +121,7 @@ public class Board implements Comparable<Board> {
         ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
         for (int i = 0; i < input.size(); i++) {
             if (i % dimension == 0) {
-                toReturn.add(new ArrayList<>());
+                toReturn.add(new ArrayList<Integer>());
             }
             toReturn.get(toReturn.size() - 1).add(input.get(i));
         }

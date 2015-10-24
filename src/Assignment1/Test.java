@@ -51,7 +51,7 @@ public class Test {
         ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
         for (int i = 0; i < input.size(); i++) {
             if (i % dimension == 0) {
-                toReturn.add(new ArrayList<>());
+                toReturn.add(new ArrayList<Integer>());
             }
             toReturn.get(toReturn.size() - 1).add(input.get(i));
         }
