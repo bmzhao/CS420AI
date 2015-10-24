@@ -1,5 +1,8 @@
 package Assignment1;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -7,14 +10,14 @@ import java.util.*;
  */
 public class EightPuzzle {
 
-    private static PuzzleHeuristicFunction zeroHeuristic = new PuzzleHeuristicFunction() {
+    public static PuzzleHeuristicFunction zeroHeuristic = new PuzzleHeuristicFunction() {
         @Override
         public int calculateHeuristic(ArrayList<ArrayList<Integer>> grid) {
             return 0;
         }
     };
 
-    private static PuzzleHeuristicFunction misplacedTilesHeuristic = new PuzzleHeuristicFunction() {
+    public static PuzzleHeuristicFunction misplacedTilesHeuristic = new PuzzleHeuristicFunction() {
         @Override
         public int calculateHeuristic(ArrayList<ArrayList<Integer>> grid) {
             int dimension = grid.size();
@@ -31,7 +34,7 @@ public class EightPuzzle {
         }
     };
 
-    private static PuzzleHeuristicFunction manhattanDistanceHeuristic = new PuzzleHeuristicFunction() {
+    public static PuzzleHeuristicFunction manhattanDistanceHeuristic = new PuzzleHeuristicFunction() {
         @Override
         public int calculateHeuristic(ArrayList<ArrayList<Integer>> grid) {
             int dimension = grid.size();
@@ -74,10 +77,28 @@ public class EightPuzzle {
     //else add to priority queue
 
 
-    public static void main(String[] args) {
-        displayMenu();
+    public static void main(String[] args) throws Exception {
+//        displayMenu();
 
+        Scanner scanner = new Scanner(new File("Allboards.txt"));
+        InfoRecorder info = new InfoRecorder();
+        PuzzleHeuristicFunction puzzleHeuristicFunction = misplacedTilesHeuristic;
+        int puzzleNumber = 0;
+        while (scanner.hasNextLine()) {
+            Board currentBoard = Board.askForThreeByThreeInput(puzzleHeuristicFunction, scanner);
+            long startTime = System.currentTimeMillis();
+            Board resultBoard = runAStar(currentBoard, DIMENSION, puzzleHeuristicFunction);
+            long endTime = System.currentTimeMillis();
+            info.addRecord(new Record(resultBoard, exploredSet.size() + frontierSet.size(), endTime - startTime));
+            System.out.println("Finished puzzle " + (++puzzleNumber) + "...");
+            scanner.nextLine();
+            if (puzzleNumber == 181439)
+                break;
+        }
+        info.displayTable();
     }
+
+
 
 
     private static void displayMenu() {
@@ -110,19 +131,20 @@ public class EightPuzzle {
             Board board = null;
             switch (value) {
                 case 1:
-                    board = Board.askForThreeByThreeInput(puzzleHeuristicFunction);
+                    Scanner scanner1 = new Scanner(System.in);
+                    board = Board.askForThreeByThreeInput(puzzleHeuristicFunction,scanner1);
                     break;
                 case 2:
                     board = new Board(DIMENSION, puzzleHeuristicFunction);
                     break;
                 case 3: {
                     InfoRecorder info = new InfoRecorder();
-                    for (int i = 0; i < 1000; i++) {
+                    for (int i = 0; i < 1000000; i++) {
                         Board currentBoard = new Board(DIMENSION, puzzleHeuristicFunction);
                         long startTime = System.currentTimeMillis();
                         Board resultBoard =runAStar(currentBoard, DIMENSION, puzzleHeuristicFunction);
                         long endTime = System.currentTimeMillis();
-                        info.addRecord(new Record(resultBoard, exploredSet.size(), endTime - startTime));
+                        info.addRecord(new Record(resultBoard, exploredSet.size() + frontierSet.size(), endTime - startTime));
                         System.out.println("Finished puzzle " + i + "...");
                     }
                     info.displayTable();
@@ -258,4 +280,5 @@ public class EightPuzzle {
     private static boolean goalTest(Board board) {
         return (board.equals(goal));
     }
+
 }

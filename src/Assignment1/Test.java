@@ -1,66 +1,80 @@
 package Assignment1;
 
-import java.util.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Created by brianzhao on 10/20/15.
  */
 public class Test {
-    public static void main(String[] args) {
-//        CustomInt customInt = new CustomInt(1);
-//        CustomInt customInt1 = new CustomInt(1);
-//        HashMap<CustomInt, Integer> set = new HashMap<>();
-//        set.put(customInt, 1);
-//        System.out.println(set.put(customInt1, 2));
-////        System.out.println(System.identityHashCode(customInt));
-////        System.out.println(System.identityHashCode(customInt1));
-//
-//        System.out.println(set.containsKey(customInt1));
-//        System.out.println(set.containsKey(customInt));
-//        System.out.println(set.get(customInt));
-//        System.out.println(set.get(customInt1));
-//
-//        System.out.println(set.size());
-
-
-        CustomInt customInt = new CustomInt(2);
-        CustomInt customInt1 = new CustomInt(2);
-        PriorityQueue<CustomInt> list = new PriorityQueue<>();
-        list.add(customInt1);
-//        list.remove(customInt);
-        list.remove(new CustomInt(2));
-        System.out.println(list.size());
-//        list.add(customInt);
-//        System.out.println(list.poll().myInt);
-//        System.out.println(list.poll().myInt);
-    }
-
-    public static class CustomInt implements Comparable<CustomInt>{
-        Integer myInt;
-
-        public CustomInt(int x) {
-            myInt = x;
-        }
-
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof CustomInt) {
-                return myInt.equals(((CustomInt) obj).myInt);
+    public static final int DIMENSION = 3;
+    public static void main(String[] args) throws Exception{
+        callGenerateBoards(DIMENSION);
+        PrintWriter pw = new PrintWriter(new File("AllBoards.txt"));
+        long count = 0;
+        for (ArrayList<Integer> currentArray : allBoards) {
+            if (Board.isSolvable(currentArray)) {
+                ArrayList<ArrayList<Integer>> twoD = convertToTwoDimensions(currentArray, DIMENSION);
+                Board board = new Board(twoD, EightPuzzle.zeroHeuristic);
+                pw.println(board);
+                System.out.println("printed board " + (++count));
             }
-            return true;
         }
+        pw.close();
 
-        @Override
-        public int compareTo(CustomInt o) {
-            return myInt - o.myInt;
-        }
+    }
 
-        @Override
-        public int hashCode() {
-            return myInt;
+    public static HashSet<ArrayList<Integer>> allBoards = new HashSet<>();
+    public static void callGenerateBoards(int dimension) {
+        ArrayList<Integer> initial = new ArrayList<>();
+        generateAllBoards(initial, dimension);
+    }
+
+//    public static ArrayList<ArrayList<Integer>> convertTo2d(ArrayList<Integer> input, int dimension) {
+//        ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
+//        ArrayList<Integer> toAdd = new ArrayList<>();
+//        for (int i = 0; i < input.size(); i++) {
+//            if (i % dimension == dimension - 1) {
+//                toAdd.add(input.get(i));
+//                toReturn.add(toAdd);
+//                toAdd = new ArrayList<>();
+//            } else {
+//                toAdd.add(input.get(i));
+//            }
+//        }
+//        return toReturn;
+//    }
+
+    private static ArrayList<ArrayList<Integer>> convertToTwoDimensions(ArrayList<Integer> input, int dimension) {
+        ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
+        for (int i = 0; i < input.size(); i++) {
+            if (i % dimension == 0) {
+                toReturn.add(new ArrayList<>());
+            }
+            toReturn.get(toReturn.size() - 1).add(input.get(i));
         }
+        return toReturn;
     }
 
 
+
+    public static void generateAllBoards(ArrayList<Integer> given, int dimension) {
+        int dimensionSquared = dimension * dimension;
+        if (given.size() == dimensionSquared) {
+            if (allBoards.contains(given)) {
+                System.out.println("weird!");
+            }
+            allBoards.add(given);
+        } else {
+            for (int i = 0; i < dimensionSquared; i++) {
+                if (!given.contains(i)) {
+                    ArrayList<Integer> nextStep = (ArrayList<Integer>) given.clone();
+                    nextStep.add(i);
+                    generateAllBoards(nextStep, dimension);
+                }
+            }
+        }
+    }
 }

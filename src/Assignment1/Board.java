@@ -20,7 +20,7 @@ public class Board implements Comparable<Board> {
     private final int heuristicCost; //this is the heuristic cost h(n)
     private BoardAction parentAction; //action that the parent took to get to this node
     private final String boardState; //string representation, must always be immediately generated
-    private final PuzzleHeuristicFunction heuristicDelegate;
+    private PuzzleHeuristicFunction heuristicDelegate;
 
     //entry point for creating a random puzzle
     public Board(int dimension, PuzzleHeuristicFunction heuristicDelegate) {
@@ -35,10 +35,9 @@ public class Board implements Comparable<Board> {
     }
 
     //entry point for asking user for a puzzle
-    public static Board askForThreeByThreeInput(PuzzleHeuristicFunction heuristicDelegate) {
+    public static Board askForThreeByThreeInput(PuzzleHeuristicFunction heuristicDelegate, Scanner scanner) {
         while (true) {
             System.out.println("Please input a 3 x 3 board");
-            Scanner scanner = new Scanner(System.in);
             ArrayList<ArrayList<Integer>> toReturn = new ArrayList<>();
             boolean nextIteration = false;
             for (int i = 0; i < 3; i++) {
@@ -117,6 +116,10 @@ public class Board implements Comparable<Board> {
             toReturn.get(toReturn.size() - 1).add(input.get(i));
         }
         return toReturn;
+    }
+
+    public void setHeuristicDelegate(PuzzleHeuristicFunction heuristicDelegate) {
+        this.heuristicDelegate = heuristicDelegate;
     }
 
 
@@ -287,4 +290,6 @@ public class Board implements Comparable<Board> {
         }
         return toReturn;
     }
+
+
 }

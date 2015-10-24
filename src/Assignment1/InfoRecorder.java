@@ -58,7 +58,7 @@ public class InfoRecorder {
             ColumnsOfTable currentColumn = map.get(depths.get(i));
             long numCases = currentColumn.numberOfCases;
             double avgSearchCost = currentColumn.totalSearchCost * 1.0 / numCases;
-            double avgTimeInSeconds = currentColumn.totalTimeTakenMilliseconds * 1.0 / numCases / 1000;
+            double avgTimeInSeconds = currentColumn.totalTimeTakenMilliseconds * 1.0 / numCases / 1000; //1000 is the number of milliseconds
             System.out.format("%-20d %-20d %-20f %-20f\n", depths.get(i), currentColumn.numberOfCases, avgSearchCost, avgTimeInSeconds);
         }
         System.out.println();
